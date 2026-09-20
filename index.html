@@ -1,0 +1,1542 @@
+import React, { useState, useEffect, useMemo } from 'react';
+import { 
+  Briefcase, 
+  UserCheck, 
+  FileText, 
+  Upload, 
+  Sparkles, 
+  Search, 
+  Filter, 
+  CheckCircle, 
+  XCircle, 
+  AlertTriangle, 
+  Mail, 
+  Layers, 
+  DollarSign, 
+  TrendingUp, 
+  ChevronRight, 
+  BarChart2, 
+  Plus, 
+  Trash2, 
+  Eye, 
+  ArrowRightLeft, 
+  Send, 
+  Copy, 
+  Key, 
+  Award, 
+  Building2, 
+  Check, 
+  RefreshCw,
+  HelpCircle,
+  Download,
+  Users
+} from 'lucide-react';
+
+const JOB_TEMPLATES = [
+  {
+    id: 'store-manager',
+    title: 'Retail Store Manager',
+    department: 'Retail',
+    skills: ['Inventory Management', 'Customer Service', 'POS Systems', 'Staff Scheduling', 'Sales Strategy', 'Team Leadership'],
+    minExp: '2-4 years',
+    education: "Bachelor's Degree or High School Diploma + 3 yrs experience",
+    description: 'Looking for an energetic Store Manager to oversee daily operations, manage floor staff, optimize inventory, and deliver exceptional customer service in a boutique retail setting.',
+    questions: ['How do you handle staff scheduling during peak sales events?', 'Describe a time you resolved a difficult customer dispute.']
+  },
+  {
+    id: 'sales-associate',
+    title: 'Sales Associate / Cashier',
+    department: 'Retail',
+    skills: ['POS Operation', 'Active Listening', 'Product Demo', 'Cash Handling', 'Communication', 'Visual Merchandising'],
+    minExp: '0-1 year',
+    education: 'High School Diploma or equivalent',
+    description: 'Friendly and reliable Sales Associate needed for immediate hiring. Duties include customer greeting, ringing up transactions, stocking shelves, and maintaining floor cleanliness.',
+    questions: ['How do you approach a hesitant customer without being pushy?', 'What is your availability for weekend shifts?']
+  },
+  {
+    id: 'jr-dev',
+    title: 'Junior Web Developer',
+    department: 'Tech Startup',
+    skills: ['JavaScript', 'React', 'Tailwind CSS', 'Git', 'REST APIs', 'HTML/CSS'],
+    minExp: '0-2 years',
+    education: 'B.Tech / BCA in Computer Science or Web Bootcamp Graduate',
+    description: 'Entry-level Web Developer to assist in building modern frontend web interfaces for client dashboards and e-commerce integrations. Great mentorship provided!',
+    questions: ['Explain a project where you fetched data from an external API.', 'How do you handle debugging when code fails in production?']
+  },
+  {
+    id: 'customer-support',
+    title: 'Customer Support Representative',
+    department: 'Customer Service',
+    skills: ['Empathy', 'Zendesk / Intercom', 'Written Communication', 'Problem Solving', 'Multi-tasking', 'Phone Etiquette'],
+    minExp: '1-2 years',
+    education: 'High School Diploma required, Degree preferred',
+    description: 'Customer Support Rep needed for fast-paced e-commerce company. Will handle incoming chat tickets, phone calls, and return processing with high empathy and efficiency.',
+    questions: ['How do you stay calm when dealing with an angry caller?', 'Describe how you prioritize multiple open support tickets.']
+  },
+  {
+    id: 'line-cook',
+    title: 'Line Cook / Kitchen Staff',
+    department: 'Hospitality & Cafe',
+    skills: ['Food Prep', 'Kitchen Safety / ServSafe', 'Speed & Accuracy', 'Plating', 'Station Maintenance', 'Teamwork'],
+    minExp: '1+ years',
+    education: 'High School Diploma or Culinary Training',
+    description: 'Busy downtown cafe seeking a dedicated Line Cook to prepare orders according to standard recipes while maintaining strict cleanliness and hygiene standards.',
+    questions: ['How do you manage order timing during a sudden lunch rush?', 'Are you certified in food safety standards?']
+  }
+];
+
+const INITIAL_CANDIDATES = [
+  {
+    id: 'c1',
+    name: 'Aarav Sharma',
+    email: 'aarav.sharma@example.com',
+    phone: '+91 98765 43210',
+    appliedRole: 'Junior Web Developer',
+    roleId: 'jr-dev',
+    matchScore: 88,
+    status: 'Shortlisted',
+    appliedDate: '2026-03-18',
+    summary: '2 years of practical experience building web apps with React, Tailwind, and Node.js. Strong frontend focus with hands-on API integration knowledge.',
+    pros: ['Strong React & Tailwind CSS skills', 'Clear GitHub portfolio with active commits', 'Relevant B.Tech CS background'],
+    cons: ['Limited backend Node.js architecture depth', 'No prior enterprise testing experience (Jest/Cypress)'],
+    redFlags: ['Short duration in previous internship (3 months)'],
+    recommendation: 'Strong Match',
+    experienceYears: '1.5 years',
+    education: 'B.Tech Computer Science (2025)',
+    interviewQuestions: [
+      'Can you explain the state management approach used in your portfolio projects?',
+      'How would you optimize a slow-rendering React component in our SaaS dashboard?'
+    ],
+    resumeText: `AARAV SHARMA | Full Stack Web Developer
+Email: aarav.sharma@example.com | Phone: +91 98765 43210
+Education: B.Tech in Computer Science - 8.4 CGPA (2025)
+Skills: React.js, JavaScript (ES6+), Tailwind CSS, HTML5, REST APIs, Git, Node.js basics.
+Experience:
+- Frontend Intern at TechSolutions (3 months): Built responsive landing pages, integrated 12+ REST endpoints.
+- Freelance Web Developer (1 year): Created 4 client websites for local cafes and retail shops using React & Tailwind.`
+  },
+  {
+    id: 'c2',
+    name: 'Priya Patel',
+    email: 'priya.patel@example.com',
+    phone: '+91 91234 56789',
+    appliedRole: 'Retail Store Manager',
+    roleId: 'store-manager',
+    matchScore: 92,
+    status: 'Interview Scheduled',
+    appliedDate: '2026-03-19',
+    summary: 'Seasoned retail supervisor with 3.5 years managing daily floor operations, inventory reconciliation, and staff shifts for a high-traffic apparel store.',
+    pros: ['Demonstrated sales growth of 18% in prior store', 'Proficient in modern POS & square inventory', 'Strong team leadership'],
+    cons: ['Mainly apparel background, may need orientation for general grocery/boutique inventory'],
+    redFlags: [],
+    recommendation: 'Strong Match',
+    experienceYears: '3.5 years',
+    education: 'Bachelor of Commerce (B.Com)',
+    interviewQuestions: [
+      'How do you manage inventory shrinkage or loss in busy store periods?',
+      'Describe your strategy for training new junior cashiers on POS speed.'
+    ],
+    resumeText: `PRIYA PATEL | Retail Operations & Store Management
+Email: priya.patel@example.com | Phone: +91 91234 56789
+Education: B.Com from Delhi University
+Skills: Inventory Management, POS Systems, Staff Scheduling, Customer Relationship, Team Training
+Experience:
+- Assistant Store Manager at StyleHub Retail (2 years): Managed team of 8 sales reps, increased footfall sales by 18%.
+- Senior Cashier & Shift Lead at QuickMart (1.5 years): Handled cash reconciliation, daily register audits, and inventory logging.`
+  },
+  {
+    id: 'c3',
+    name: 'Rohan Verma',
+    email: 'rohan.v@example.com',
+    phone: '+91 99887 76655',
+    appliedRole: 'Customer Support Representative',
+    roleId: 'customer-support',
+    matchScore: 62,
+    status: 'Unscreened',
+    appliedDate: '2026-03-20',
+    summary: 'Background in tele-sales with customer interaction experience. Lacks direct helpdesk ticketing tool experience like Zendesk.',
+    pros: ['Good verbal communication', 'Comfortable taking high volume calls'],
+    cons: ['No hands-on experience with ticketing software (Zendesk/Intercom)', 'Grammar in resume resume shows minor inconsistency'],
+    redFlags: ['Frequent job hopping (3 jobs in 1 year)'],
+    recommendation: 'Potential',
+    experienceYears: '1 year',
+    education: 'High School Diploma',
+    interviewQuestions: [
+      'Why have you switched roles multiple times over the past year?',
+      'How quickly can you learn digital helpdesk software like Intercom?'
+    ],
+    resumeText: `ROHAN VERMA | Sales & Customer Support
+Email: rohan.v@example.com
+Experience:
+- Tele-Sales Executive at CallConnect (5 months): Made outbound calls for credit card sales.
+- Front Desk Receptionist at Hotel Plaza (4 months): Handled guest check-ins and phone calls.`
+  },
+  {
+    id: 'c4',
+    name: 'Ananya Roy',
+    email: 'ananya.roy@example.com',
+    phone: '+91 94567 89012',
+    appliedRole: 'Junior Web Developer',
+    roleId: 'jr-dev',
+    matchScore: 41,
+    status: 'Rejected',
+    appliedDate: '2026-03-15',
+    summary: 'Primary background in graphic design and print media. Minimal exposure to React or modern JavaScript web frameworks.',
+    pros: ['Strong Figma & Photoshop graphic design skills'],
+    cons: ['Missing required JavaScript / React frontend coding experience', 'No experience with REST APIs or Git workflows'],
+    redFlags: ['Does not meet core coding criteria for developer role'],
+    recommendation: 'Unfit',
+    experienceYears: '2 years (Design)',
+    education: 'Diploma in Graphic Design',
+    interviewQuestions: [],
+    resumeText: `ANANYA ROY | Graphic Designer & Creative Lead
+Email: ananya.roy@example.com
+Skills: Photoshop, Illustrator, Figma, Basic HTML/CSS.
+Experience: Graphic Designer for 2 years creating banners, social media posts, and print flyers.`
+  }
+];
+
+export default function App() {
+  const [apiKey, setApiKey] = useState('');
+  const [activeTab, setActiveTab] = useState('pipeline'); // pipeline, job-builder, screener, monetization
+  const [selectedJob, setSelectedJob] = useState(JOB_TEMPLATES[0]);
+  const [candidates, setCandidates] = useState(INITIAL_CANDIDATES);
+  const [customJobTitle, setCustomJobTitle] = useState('');
+  const [customSkills, setCustomSkills] = useState('');
+  const [customExp, setCustomExp] = useState('1-2 years');
+  const [customDesc, setCustomDesc] = useState('');
+  
+  // Search & Filter
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterRole, setFilterRole] = useState('ALL');
+  const [filterStatus, setFilterStatus] = useState('ALL');
+  const [filterFit, setFilterFit] = useState('ALL');
+
+  // Screener state
+  const [pastedResumeText, setPastedResumeText] = useState('');
+  const [candidateNameInput, setCandidateNameInput] = useState('');
+  const [candidateEmailInput, setCandidateEmailInput] = useState('');
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisError, setAnalysisError] = useState('');
+
+  // Modals
+  const [compareList, setCompareList] = useState([]);
+  const [showCompareModal, setShowCompareModal] = useState(false);
+  const [selectedCandidateDetail, setSelectedCandidateDetail] = useState(null);
+  
+  // Email Modal state
+  const [emailModalCandidate, setEmailModalCandidate] = useState(null);
+  const [emailType, setEmailType] = useState('interview'); // interview, rejection, follow-up
+  const [emailSubject, setEmailSubject] = useState('');
+  const [emailBody, setEmailBody] = useState('');
+  const [isDraftingEmail, setIsDraftingEmail] = useState(false);
+  const [copiedEmail, setCopiedEmail] = useState(false);
+
+  // Monetization Guide Modal
+  const [showGuideModal, setShowGuideModal] = useState(false);
+
+  const callGeminiAPI = async (prompt, systemInstruction = '') => {
+    try {
+      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey.trim()}`;
+      
+      const payload = {
+        contents: [
+          {
+            parts: [{ text: prompt }]
+          }
+        ],
+        generationConfig: {
+          temperature: 0.2,
+          responseMimeType: "application/json",
+        }
+      };
+
+      if (systemInstruction) {
+        payload.systemInstruction = {
+          parts: [{ text: systemInstruction }]
+        };
+      }
+
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData?.error?.message || `API HTTP Error: ${res.status}`);
+      }
+
+      const data = await res.json();
+      const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!rawText) throw new Error('No content returned from Gemini AI.');
+      return JSON.parse(rawText);
+    } catch (err) {
+      console.error('Gemini API Error:', err);
+      throw err;
+    }
+  };
+
+  const handleAnalyzeResume = async (e) => {
+    e.preventDefault();
+    if (!pastedResumeText.trim()) {
+      setAnalysisError('Please paste resume text or click "Load Sample Resume" below.');
+      return;
+    }
+
+    setIsAnalyzing(true);
+    setAnalysisError('');
+
+    const currentRole = selectedJob;
+
+    // Default fallback parsing if API is omitted or fails
+    let resultJSON = null;
+
+    if (apiKey.trim()) {
+      try {
+        const systemPrompt = `You are an expert HR Screener and Talent Acquisition Lead for Small Businesses. Analyze candidate resumes against the given Job Description strictly and return a JSON response.`;
+        const userPrompt = `
+Job Role Title: ${currentRole.title}
+Required Skills: ${currentRole.skills.join(', ')}
+Minimum Experience: ${currentRole.minExp}
+Education Required: ${currentRole.education}
+Role Description: ${currentRole.description}
+
+Candidate Name: ${candidateNameInput || 'Unnamed Candidate'}
+Candidate Email: ${candidateEmailInput || 'Not Provided'}
+
+Resume Text:
+"""
+${pastedResumeText}
+"""
+
+Instructions: Analyze fit and provide a valid JSON object with the exact structure:
+{
+  "matchScore": number (0 to 100),
+  "recommendation": "Strong Match" | "Potential" | "Unfit",
+  "summary": "2 sentence summary of candidate experience relative to role",
+  "pros": ["string pro 1", "string pro 2", "string pro 3"],
+  "cons": ["missing skill or gap 1", "gap 2"],
+  "redFlags": ["red flag 1 if any"],
+  "experienceYears": "estimated experience in years/months",
+  "education": "detected education level",
+  "interviewQuestions": [
+    "Personalized interview question 1 addressing a gap or project",
+    "Personalized interview question 2"
+  ]
+}
+`;
+        resultJSON = await callGeminiAPI(userPrompt, systemPrompt);
+      } catch (err) {
+        console.warn('Falling back to local heuristic analysis:', err);
+        setAnalysisError(`Gemini Call Failed (${err.message}). Using smart fallback engine.`);
+      }
+    }
+
+    // Heuristic Fallback Engine if API key is not provided or fails
+    if (!resultJSON) {
+      const lowerResume = pastedResumeText.toLowerCase();
+      let matchedSkillCount = 0;
+      currentRole.skills.forEach(skill => {
+        if (lowerResume.includes(skill.toLowerCase())) matchedSkillCount++;
+      });
+
+      const skillRatio = currentRole.skills.length > 0 ? (matchedSkillCount / currentRole.skills.length) : 0.5;
+      let calculatedScore = Math.min(95, Math.max(35, Math.round(skillRatio * 100 + Math.random() * 15)));
+
+      let rec = 'Potential';
+      if (calculatedScore >= 75) rec = 'Strong Match';
+      else if (calculatedScore < 50) rec = 'Unfit';
+
+      const detectedPros = currentRole.skills.filter(s => lowerResume.includes(s.toLowerCase()));
+      const missingSkills = currentRole.skills.filter(s => !lowerResume.includes(s.toLowerCase()));
+
+      resultJSON = {
+        matchScore: calculatedScore,
+        recommendation: rec,
+        summary: `Analyzed resume against ${currentRole.title}. Demonstrates ${matchedSkillCount} matching required core skill competencies.`,
+        pros: detectedPros.length > 0 ? detectedPros.map(s => `Mentions experience with ${s}`) : ['Has general relevant background'],
+        cons: missingSkills.length > 0 ? missingSkills.slice(0, 3).map(s => `Missing explicit mention of ${s}`) : ['No major skill gaps detected'],
+        redFlags: lowerResume.includes('gap') || lowerResume.length < 150 ? ['Brief or incomplete resume text'] : [],
+        experienceYears: lowerResume.includes('year') ? '1-3 years' : 'Entry Level',
+        education: lowerResume.includes('b.tech') || lowerResume.includes('bachelor') ? 'Bachelor Degree' : 'High School / Diploma',
+        interviewQuestions: [
+          `How have you applied your key skills in past projects relevant to ${currentRole.title}?`,
+          missingSkills[0] ? `Our role requires ${missingSkills[0]}. What experience or training do you have with it?` : 'Where do you see your career growing over the next two years?'
+        ]
+      };
+    }
+
+    const newCandidate = {
+      id: 'c_' + Date.now(),
+      name: candidateNameInput.trim() || 'New Candidate',
+      email: candidateEmailInput.trim() || 'candidate@example.com',
+      phone: '+91 ' + Math.floor(6000000000 + Math.random() * 3999999999),
+      appliedRole: currentRole.title,
+      roleId: currentRole.id,
+      matchScore: resultJSON.matchScore || 70,
+      status: 'Unscreened',
+      appliedDate: new Date().toISOString().split('T')[0],
+      summary: resultJSON.summary || 'Candidate analyzed via AI parser.',
+      pros: resultJSON.pros || [],
+      cons: resultJSON.cons || [],
+      redFlags: resultJSON.redFlags || [],
+      recommendation: resultJSON.recommendation || 'Potential',
+      experienceYears: resultJSON.experienceYears || '1+ years',
+      education: resultJSON.education || 'High School / Graduate',
+      interviewQuestions: resultJSON.interviewQuestions || [],
+      resumeText: pastedResumeText
+    };
+
+    setCandidates(prev => [newCandidate, ...prev]);
+    setIsAnalyzing(false);
+    setPastedResumeText('');
+    setCandidateNameInput('');
+    setCandidateEmailInput('');
+    setActiveTab('pipeline');
+  };
+
+  const handleStatusChange = (candidateId, newStatus) => {
+    setCandidates(prev => prev.map(c => c.id === candidateId ? { ...c, status: newStatus } : c));
+  };
+
+  const toggleCompare = (candidate) => {
+    if (compareList.some(c => c.id === candidate.id)) {
+      setCompareList(prev => prev.filter(c => c.id !== candidate.id));
+    } else {
+      if (compareList.length >= 3) {
+        alert('You can compare up to 3 candidates simultaneously.');
+        return;
+      }
+      setCompareList(prev => [...prev, candidate]);
+    }
+  };
+
+  const generateAIEmail = async (candidate, type) => {
+    setIsDraftingEmail(true);
+    setEmailModalCandidate(candidate);
+    setEmailType(type);
+    setCopiedEmail(false);
+
+    let defaultSub = '';
+    let defaultBody = '';
+
+    if (type === 'interview') {
+      defaultSub = `Interview Invitation for ${candidate.appliedRole} - ${selectedJob.title}`;
+      defaultBody = `Dear ${candidate.name},\n\nThank you for applying for the ${candidate.appliedRole} position at our company. We were impressed with your background and match score (${candidate.matchScore}% fit) for our team.\n\nWe would like to invite you for an initial 20-minute interview. Please let us know your availability over the coming days.\n\nBest regards,\nHiring Manager`;
+    } else if (type === 'rejection') {
+      defaultSub = `Update on your application for ${candidate.appliedRole}`;
+      defaultBody = `Dear ${candidate.name},\n\nThank you for taking the time to apply for the ${candidate.appliedRole} role with us. After reviewing all candidate applications, we have decided to move forward with candidates whose experience more closely aligns with our current immediate needs.\n\nWe wish you all the best in your job search.\n\nWarm regards,\nHiring Team`;
+    } else {
+      defaultSub = `Quick follow-up regarding your application for ${candidate.appliedRole}`;
+      defaultBody = `Hi ${candidate.name},\n\nWe are currently reviewing applications for the ${candidate.appliedRole} role. Your profile looks promising! We wanted to ask if you have any updated availability or portfolio work to share.\n\nLooking forward to hearing from you.\n\nBest,\nHiring Lead`;
+    }
+
+    setEmailSubject(defaultSub);
+    setEmailBody(defaultBody);
+
+    if (apiKey.trim()) {
+      try {
+        const prompt = `Write a professional, polite, and personalized small business hiring email.
+Candidate Name: ${candidate.name}
+Role Applied: ${candidate.appliedRole}
+Email Type: ${type} (interview invitation, rejection notice, or follow-up)
+Candidate Pros: ${candidate.pros.join(', ')}
+Candidate Gaps/Cons: ${candidate.cons.join(', ')}
+
+Return a JSON with "subject" and "body" fields.
+`;
+        const res = await callGeminiAPI(prompt, 'You are an AI Email Assistant for small business hiring managers.');
+        if (res.subject && res.body) {
+          setEmailSubject(res.subject);
+          setEmailBody(res.body);
+        }
+      } catch (e) {
+        console.warn('Email generation fallback to template');
+      }
+    }
+    setIsDraftingEmail(false);
+  };
+
+  const filteredCandidates = useMemo(() => {
+    return candidates.filter(c => {
+      const matchesSearch = c.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                            c.appliedRole.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            c.email.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesRole = filterRole === 'ALL' || c.appliedRole === filterRole;
+      const matchesStatus = filterStatus === 'ALL' || c.status === filterStatus;
+      const matchesFit = filterFit === 'ALL' || c.recommendation === filterFit;
+      return matchesSearch && matchesRole && matchesStatus && matchesFit;
+    });
+  }, [candidates, searchQuery, filterRole, filterStatus, filterFit]);
+
+  const getRecommendationBadge = (rec) => {
+    switch (rec) {
+      case 'Strong Match':
+        return <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200"><CheckCircle className="w-3.5 h-3.5" /> Strong Match</span>;
+      case 'Potential':
+        return <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-200"><AlertTriangle className="w-3.5 h-3.5" /> Potential</span>;
+      default:
+        return <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-rose-100 text-rose-800 border border-rose-200"><XCircle className="w-3.5 h-3.5" /> Unfit</span>;
+    }
+  };
+
+  const getStatusBadge = (status) => {
+    const colors = {
+      'Unscreened': 'bg-slate-100 text-slate-700 border-slate-300',
+      'Shortlisted': 'bg-blue-100 text-blue-800 border-blue-200',
+      'Interview Scheduled': 'bg-purple-100 text-purple-800 border-purple-200',
+      'Hired': 'bg-emerald-100 text-emerald-800 border-emerald-200',
+      'Rejected': 'bg-rose-100 text-rose-800 border-rose-200'
+    };
+    return <span className={`text-xs px-2.5 py-1 rounded-full font-medium border ${colors[status] || colors['Unscreened']}`}>{status}</span>;
+  };
+
+  const handleLoadSampleResume = () => {
+    setCandidateNameInput('Siddharth Malhotra');
+    setCandidateEmailInput('siddharth.m@example.com');
+    setPastedResumeText(`SIDDHARTH MALHOTRA
+Email: siddharth.m@example.com | Phone: +91 98112 33445
+Location: Mumbai, India
+
+SUMMARY:
+Highly motivated Retail Sales Representative with 2+ years of experience in high-volume customer service, cash desk management, and stock display. Proven record in achieving monthly store targets and maintaining POS register accuracy.
+
+SKILLS:
+- Customer Service & Relationship Management
+- POS Terminal Operation & Cash Handling
+- Inventory Stocking & Visual Merchandising
+- Product Demonstrations & Cross-selling
+- Fluent in English and Hindi
+
+EXPERIENCE:
+Retail Sales Executive | Westside Retail Store (Jan 2024 - Present)
+- Managed customer inquiries, handled cash and credit register transactions averaging $3,000 daily.
+- Assisted in weekly stock inventory audits with zero discrepancy records over 6 consecutive months.
+- Increased store loyalty card sign-ups by 22% quarter-over-quarter.
+
+Junior Associate | QuickBite Cafe (Jun 2023 - Dec 2023)
+- Greeted incoming guests, took food orders, and resolved service complaints promptly.
+
+EDUCATION:
+Bachelor of Commerce (B.Com) - University of Mumbai (2023)`);
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col">
+      {}
+      <header className="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-30 shadow-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
+              <Sparkles className="w-6 h-6 animate-pulse" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-100 to-indigo-200">
+                  HireLocal AI
+                </span>
+                <span className="bg-indigo-500/20 text-indigo-300 text-[10px] font-semibold px-2 py-0.5 rounded border border-indigo-500/30">
+                  Small Business Edition
+                </span>
+              </div>
+              <p className="text-xs text-slate-400 hidden sm:block">Smart Resume Screener & Hiring Assistant</p>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={() => setShowGuideModal(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white text-xs font-semibold shadow-md hover:shadow-lg transition"
+            >
+              <DollarSign className="w-4 h-4" />
+              <span>Freelance Pitch & Sell Guide</span>
+            </button>
+
+            {/* API Key Modal / Popover Toggle */}
+            <div className="relative group">
+              <div className="flex items-center gap-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-1.5 rounded-lg text-xs cursor-pointer transition">
+                <Key className="w-3.5 h-3.5 text-indigo-400" />
+                <span className="text-slate-300 font-medium">
+                  {apiKey ? 'API Key Configured' : 'Set Gemini Key'}
+                </span>
+              </div>
+              
+              <div className="absolute right-0 mt-2 w-80 bg-white text-slate-800 rounded-xl shadow-2xl border border-slate-200 p-4 hidden group-hover:block z-50">
+                <h4 className="text-sm font-bold text-slate-900 mb-1 flex items-center gap-1.5">
+                  <Key className="w-4 h-4 text-indigo-600" /> Google Gemini API Key
+                </h4>
+                <p className="text-xs text-slate-500 mb-3">
+                  Optionally paste your free Gemini API key to enable live AI analysis. (Fallback engine active if empty).
+                </p>
+                <input
+                  type="password"
+                  placeholder="AIzaSy..."
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  className="w-full text-xs p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none mb-2"
+                />
+                <p className="text-[11px] text-slate-400">
+                  Key remains safely stored in your browser session memory only.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Navigation Tabs */}
+        <div className="bg-slate-800/80 border-t border-slate-700/60 px-4 sm:px-8">
+          <div className="max-w-7xl mx-auto flex space-x-1 sm:space-x-4 overflow-x-auto text-xs sm:text-sm font-medium py-1">
+            <button
+              onClick={() => setActiveTab('pipeline')}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-lg transition ${
+                activeTab === 'pipeline'
+                  ? 'bg-indigo-600 text-white shadow-md'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+              }`}
+            >
+              <Users className="w-4 h-4" />
+              <span>Candidate Pipeline ({candidates.length})</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('screener')}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-lg transition ${
+                activeTab === 'screener'
+                  ? 'bg-indigo-600 text-white shadow-md'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+              }`}
+            >
+              <Sparkles className="w-4 h-4 text-amber-300" />
+              <span>AI Resume Analyzer</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('job-builder')}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-lg transition ${
+                activeTab === 'job-builder'
+                  ? 'bg-indigo-600 text-white shadow-md'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+              }`}
+            >
+              <Briefcase className="w-4 h-4" />
+              <span>Job Roles & Templates</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        
+        {/* Banner Alert for BTech Student Freelance Opportunity */}
+        <div className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 rounded-2xl p-4 sm:p-5 text-white mb-6 shadow-xl relative overflow-hidden border border-indigo-700/50">
+          <div className="absolute right-0 top-0 bottom-0 opacity-10 flex items-center pr-10 pointer-events-none">
+            <Building2 className="w-64 h-64 text-white" />
+          </div>
+          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="bg-amber-400 text-slate-950 font-extrabold text-[10px] px-2 py-0.5 rounded tracking-wide uppercase">
+                  Student Monetization Project
+                </span>
+                <span className="text-indigo-200 text-xs">Ready-to-Sell Local SaaS</span>
+              </div>
+              <h2 className="text-lg sm:text-xl font-bold tracking-tight">
+                Pitch this AI Screener to Local Cafes, Retail Stores & Tech Startups
+              </h2>
+              <p className="text-xs sm:text-sm text-indigo-200 mt-1 max-w-2xl">
+                Small business owners waste 15+ hours per week manually reading unqualified resumes. You can white-label and license this exact app to them for <span className="font-semibold text-white">₹3,000 - ₹8,000 / month ($40 - $100)</span>.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowGuideModal(true)}
+              className="whitespace-nowrap px-4 py-2.5 bg-white text-indigo-900 hover:bg-indigo-50 rounded-xl text-xs sm:text-sm font-bold shadow-md transition flex items-center gap-2"
+            >
+              <DollarSign className="w-4 h-4 text-emerald-600" />
+              <span>View Business Pitch Deck</span>
+            </button>
+          </div>
+        </div>
+
+        {/* ================= TAB 1: PIPELINE DASHBOARD ================= */}
+        {activeTab === 'pipeline' && (
+          <div className="space-y-6">
+            
+            {/* Quick Metrics Cards */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-slate-500">Total Applicants</p>
+                  <p className="text-2xl font-bold text-slate-900 mt-1">{candidates.length}</p>
+                </div>
+                <div className="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                  <Users className="w-5 h-5" />
+                </div>
+              </div>
+
+              <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-slate-500">Strong Fits (&gt;75%)</p>
+                  <p className="text-2xl font-bold text-emerald-600 mt-1">
+                    {candidates.filter(c => c.recommendation === 'Strong Match').length}
+                  </p>
+                </div>
+                <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                  <CheckCircle className="w-5 h-5" />
+                </div>
+              </div>
+
+              <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-slate-500">Interviews Scheduled</p>
+                  <p className="text-2xl font-bold text-purple-600 mt-1">
+                    {candidates.filter(c => c.status === 'Interview Scheduled').length}
+                  </p>
+                </div>
+                <div className="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
+                  <UserCheck className="w-5 h-5" />
+                </div>
+              </div>
+
+              <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-slate-500">Active Job Role</p>
+                  <p className="text-sm font-bold text-slate-800 mt-1 truncate">{selectedJob.title}</p>
+                </div>
+                <div className="w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+                  <Briefcase className="w-5 h-5" />
+                </div>
+              </div>
+            </div>
+
+            {/* Search and Filters Toolbar */}
+            <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+              
+              <div className="relative flex-1">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+                <input
+                  type="text"
+                  placeholder="Search candidates by name, role, email..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full text-xs sm:text-sm pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                />
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
+                  <Filter className="w-3.5 h-3.5" />
+                  <span>Filter:</span>
+                </div>
+
+                <select
+                  value={filterRole}
+                  onChange={(e) => setFilterRole(e.target.value)}
+                  className="text-xs p-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  <option value="ALL">All Roles</option>
+                  {JOB_TEMPLATES.map(j => (
+                    <option key={j.id} value={j.title}>{j.title}</option>
+                  ))}
+                </select>
+
+                <select
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                  className="text-xs p-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  <option value="ALL">All Statuses</option>
+                  <option value="Unscreened">Unscreened</option>
+                  <option value="Shortlisted">Shortlisted</option>
+                  <option value="Interview Scheduled">Interview Scheduled</option>
+                  <option value="Hired">Hired</option>
+                  <option value="Rejected">Rejected</option>
+                </select>
+
+                <select
+                  value={filterFit}
+                  onChange={(e) => setFilterFit(e.target.value)}
+                  className="text-xs p-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  <option value="ALL">All Fit Levels</option>
+                  <option value="Strong Match">Strong Match</option>
+                  <option value="Potential">Potential</option>
+                  <option value="Unfit">Unfit</option>
+                </select>
+
+                {compareList.length > 0 && (
+                  <button
+                    onClick={() => setShowCompareModal(true)}
+                    className="flex items-center gap-1.5 text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg font-semibold transition shadow-sm"
+                  >
+                    <ArrowRightLeft className="w-3.5 h-3.5" />
+                    <span>Compare ({compareList.length})</span>
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Candidates Table / Grid */}
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs sm:text-sm">
+                  <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider text-[11px]">
+                    <tr>
+                      <th className="p-4 w-10">Compare</th>
+                      <th className="p-4">Candidate</th>
+                      <th className="p-4">Applied Role</th>
+                      <th className="p-4">AI Match Index</th>
+                      <th className="p-4">Fit Category</th>
+                      <th className="p-4">Pipeline Status</th>
+                      <th className="p-4 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {filteredCandidates.length === 0 ? (
+                      <tr>
+                        <td colSpan="7" className="text-center py-12 text-slate-400 text-sm">
+                          No candidates found matching your active filters.
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredCandidates.map((c) => {
+                        const isCompared = compareList.some(comp => comp.id === c.id);
+                        return (
+                          <tr key={c.id} className="hover:bg-slate-50/80 transition">
+                            <td className="p-4 text-center">
+                              <input
+                                type="checkbox"
+                                checked={isCompared}
+                                onChange={() => toggleCompare(c)}
+                                className="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500 cursor-pointer"
+                              />
+                            </td>
+
+                            <td className="p-4">
+                              <div className="font-bold text-slate-900">{c.name}</div>
+                              <div className="text-slate-400 text-xs">{c.email}</div>
+                              <div className="text-slate-400 text-[11px] mt-0.5">{c.phone}</div>
+                            </td>
+
+                            <td className="p-4 font-medium text-slate-700">
+                              {c.appliedRole}
+                            </td>
+
+                            <td className="p-4 w-44">
+                              <div className="flex items-center gap-2">
+                                <div className="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
+                                  <div
+                                    className={`h-2.5 rounded-full transition-all duration-500 ${
+                                      c.matchScore >= 80 ? 'bg-emerald-500' :
+                                      c.matchScore >= 60 ? 'bg-amber-500' : 'bg-rose-500'
+                                    }`}
+                                    style={{ width: `${c.matchScore}%` }}
+                                  ></div>
+                                </div>
+                                <span className="font-extrabold text-xs text-slate-800 w-8">
+                                  {c.matchScore}%
+                                </span>
+                              </div>
+                            </td>
+
+                            <td className="p-4">
+                              {getRecommendationBadge(c.recommendation)}
+                            </td>
+
+                            <td className="p-4">
+                              <select
+                                value={c.status}
+                                onChange={(e) => handleStatusChange(c.id, e.target.value)}
+                                className="text-xs font-semibold bg-white border border-slate-300 rounded-lg p-1.5 focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+                              >
+                                <option value="Unscreened">Unscreened</option>
+                                <option value="Shortlisted">Shortlisted</option>
+                                <option value="Interview Scheduled">Interview Scheduled</option>
+                                <option value="Hired">Hired</option>
+                                <option value="Rejected">Rejected</option>
+                              </select>
+                            </td>
+
+                            <td className="p-4 text-right">
+                              <div className="flex items-center justify-end space-x-2">
+                                <button
+                                  onClick={() => setSelectedCandidateDetail(c)}
+                                  className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition"
+                                  title="View AI Analysis & Resume"
+                                >
+                                  <Eye className="w-4 h-4" />
+                                </button>
+
+                                <button
+                                  onClick={() => generateAIEmail(c, 'interview')}
+                                  className="p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 transition"
+                                  title="AI Draft Interview Invite"
+                                >
+                                  <Mail className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ================= TAB 2: AI RESUME SCREENER ================= */}
+        {activeTab === 'screener' && (
+          <div className="max-w-4xl mx-auto space-y-6">
+            <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
+                <div>
+                  <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-indigo-600" />
+                    Screen Candidate Resume
+                  </h2>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Target Role: <span className="font-semibold text-indigo-600">{selectedJob.title}</span> ({selectedJob.department})
+                  </p>
+                </div>
+
+                <button
+                  onClick={handleLoadSampleResume}
+                  className="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold rounded-lg transition border border-indigo-200 flex items-center gap-1.5"
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>Load Sample Resume</span>
+                </button>
+              </div>
+
+              {analysisError && (
+                <div className="mb-4 p-3 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 shrink-0" />
+                  <span>{analysisError}</span>
+                </div>
+              )}
+
+              <form onSubmit={handleAnalyzeResume} className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      Candidate Full Name
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Siddharth Malhotra"
+                      value={candidateNameInput}
+                      onChange={(e) => setCandidateNameInput(e.target.value)}
+                      className="w-full text-xs sm:text-sm p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      Candidate Email
+                    </label>
+                    <input
+                      type="email"
+                      placeholder="e.g. candidate@example.com"
+                      value={candidateEmailInput}
+                      onChange={(e) => setCandidateEmailInput(e.target.value)}
+                      className="w-full text-xs sm:text-sm p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    Paste Candidate Resume Text / Summary
+                  </label>
+                  <textarea
+                    rows={10}
+                    placeholder="Paste full resume text, work experience summary, or bio here..."
+                    value={pastedResumeText}
+                    onChange={(e) => setPastedResumeText(e.target.value)}
+                    className="w-full text-xs sm:text-sm p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none font-mono text-slate-800"
+                  ></textarea>
+                </div>
+
+                <div className="pt-2 flex items-center justify-between">
+                  <span className="text-xs text-slate-400">
+                    AI engine evaluates skills, gaps, red flags & interview questions.
+                  </span>
+
+                  <button
+                    type="submit"
+                    disabled={isAnalyzing}
+                    className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow-lg shadow-indigo-500/20 transition flex items-center gap-2 disabled:opacity-50"
+                  >
+                    {isAnalyzing ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                        <span>Analyzing with Gemini AI...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-4 h-4 text-amber-300" />
+                        <span>Run AI Screen & Parse</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* ================= TAB 3: JOB ROLES & TEMPLATES ================= */}
+        {activeTab === 'job-builder' && (
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <h2 className="text-xl font-bold text-slate-900">Job Description Templates</h2>
+                <p className="text-xs text-slate-500">Select an active template or customize criteria for local small business roles.</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              
+              {/* Template Selector Column */}
+              <div className="md:col-span-1 space-y-3">
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Pre-Loaded Local Templates</p>
+                {JOB_TEMPLATES.map((tmpl) => {
+                  const isSelected = selectedJob.id === tmpl.id;
+                  return (
+                    <div
+                      key={tmpl.id}
+                      onClick={() => setSelectedJob(tmpl)}
+                      className={`p-4 rounded-xl border cursor-pointer transition ${
+                        isSelected
+                          ? 'bg-indigo-50/80 border-indigo-500 shadow-sm'
+                          : 'bg-white border-slate-200 hover:border-slate-300'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs font-semibold text-indigo-600 uppercase tracking-wide">{tmpl.department}</span>
+                        {isSelected && <Check className="w-4 h-4 text-indigo-600" />}
+                      </div>
+                      <h3 className="font-bold text-slate-900 text-sm">{tmpl.title}</h3>
+                      <p className="text-xs text-slate-500 mt-1 line-clamp-2">{tmpl.description}</p>
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {tmpl.skills.slice(0, 3).map((sk, idx) => (
+                          <span key={idx} className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded">
+                            {sk}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Template Inspector / Active Job Criteria */}
+              <div className="md:col-span-2 bg-white rounded-xl p-6 border border-slate-200 shadow-sm space-y-5">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                  <div>
+                    <span className="text-xs font-bold text-indigo-600 uppercase tracking-wide">Active Role Criteria</span>
+                    <h3 className="text-lg font-bold text-slate-900">{selectedJob.title}</h3>
+                  </div>
+                  <span className="text-xs px-3 py-1 bg-slate-100 text-slate-700 font-semibold rounded-full border border-slate-200">
+                    Min Exp: {selectedJob.minExp}
+                  </span>
+                </div>
+
+                <div>
+                  <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Description</h4>
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">{selectedJob.description}</p>
+                </div>
+
+                <div>
+                  <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Required Core Skills</h4>
+                  <div className="flex flex-wrap gap-1.5">
+                    {selectedJob.skills.map((skill, idx) => (
+                      <span key={idx} className="text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-100 px-2.5 py-1 rounded-lg">
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Education Standard</h4>
+                  <p className="text-xs text-slate-600">{selectedJob.education}</p>
+                </div>
+
+                <div>
+                  <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Standard Screening Questions</h4>
+                  <ul className="space-y-1.5">
+                    {selectedJob.questions.map((q, idx) => (
+                      <li key={idx} className="text-xs text-slate-600 flex items-start gap-2 bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                        <HelpCircle className="w-4 h-4 text-indigo-500 shrink-0 mt-0.5" />
+                        <span>{q}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+                  <span className="text-xs text-slate-400">Selected role will be used for all new resume screens.</span>
+                  <button
+                    onClick={() => setActiveTab('screener')}
+                    className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow transition"
+                  >
+                    Start Screening For This Role →
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        )}
+
+      </main>
+
+      {}
+      {selectedCandidateDetail && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200">
+            
+            {/* Modal Header */}
+            <div className="p-6 bg-slate-900 text-white rounded-t-2xl flex items-center justify-between sticky top-0 z-10">
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-lg font-bold">{selectedCandidateDetail.name}</h3>
+                  {getRecommendationBadge(selectedCandidateDetail.recommendation)}
+                </div>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Role: <span className="text-indigo-300">{selectedCandidateDetail.appliedRole}</span> | Applied {selectedCandidateDetail.appliedDate}
+                </p>
+              </div>
+
+              <button
+                onClick={() => setSelectedCandidateDetail(null)}
+                className="p-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-6 space-y-6">
+              
+              {/* Match Score Hero */}
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <div className={`w-16 h-16 rounded-2xl flex items-center justify-center font-extrabold text-xl text-white ${
+                    selectedCandidateDetail.matchScore >= 80 ? 'bg-emerald-500' :
+                    selectedCandidateDetail.matchScore >= 60 ? 'bg-amber-500' : 'bg-rose-500'
+                  }`}>
+                    {selectedCandidateDetail.matchScore}%
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-slate-900 text-sm">AI Match Index</h4>
+                    <p className="text-xs text-slate-500">Experience: {selectedCandidateDetail.experienceYears} | Education: {selectedCandidateDetail.education}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      const cand = selectedCandidateDetail;
+                      setSelectedCandidateDetail(null);
+                      generateAIEmail(cand, 'interview');
+                    }}
+                    className="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition shadow flex items-center gap-1.5"
+                  >
+                    <Mail className="w-3.5 h-3.5" />
+                    <span>Invite to Interview</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      const cand = selectedCandidateDetail;
+                      setSelectedCandidateDetail(null);
+                      generateAIEmail(cand, 'rejection');
+                    }}
+                    className="px-3 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold rounded-lg transition"
+                  >
+                    Send Rejection
+                  </button>
+                </div>
+              </div>
+
+              {/* Summary */}
+              <div>
+                <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">AI Executive Summary</h4>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed bg-indigo-50/50 p-3 rounded-xl border border-indigo-100">
+                  {selectedCandidateDetail.summary}
+                </p>
+              </div>
+
+              {/* Pros & Missing Skills */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="bg-emerald-50/50 p-4 rounded-xl border border-emerald-100">
+                  <h4 className="text-xs font-bold text-emerald-800 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    <CheckCircle className="w-4 h-4 text-emerald-600" /> Key Strengths & Pros
+                  </h4>
+                  <ul className="space-y-1 text-xs text-emerald-900">
+                    {selectedCandidateDetail.pros.map((pro, idx) => (
+                      <li key={idx}>• {pro}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="bg-amber-50/50 p-4 rounded-xl border border-amber-100">
+                  <h4 className="text-xs font-bold text-amber-800 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    <AlertTriangle className="w-4 h-4 text-amber-600" /> Gaps / Missing Skills
+                  </h4>
+                  <ul className="space-y-1 text-xs text-amber-900">
+                    {selectedCandidateDetail.cons.length > 0 ? (
+                      selectedCandidateDetail.cons.map((con, idx) => (
+                        <li key={idx}>• {con}</li>
+                      ))
+                    ) : (
+                      <li className="text-slate-400 italic">No significant missing skills identified</li>
+                    )}
+                  </ul>
+                </div>
+              </div>
+
+              {/* Red Flags */}
+              {selectedCandidateDetail.redFlags && selectedCandidateDetail.redFlags.length > 0 && (
+                <div className="bg-rose-50 p-3 rounded-xl border border-rose-200 text-xs text-rose-800">
+                  <span className="font-bold block mb-1">⚠️ Red Flags / Warnings:</span>
+                  <ul className="list-disc list-inside space-y-0.5">
+                    {selectedCandidateDetail.redFlags.map((rf, idx) => (
+                      <li key={idx}>{rf}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Generated Interview Questions */}
+              <div>
+                <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                  Auto-Generated Interview Questions (Targeting Gaps)
+                </h4>
+                <div className="space-y-2">
+                  {selectedCandidateDetail.interviewQuestions.map((q, idx) => (
+                    <div key={idx} className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 font-medium flex items-start gap-2">
+                      <span className="w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-[10px] shrink-0">
+                        {idx + 1}
+                      </span>
+                      <span>{q}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Raw Resume Text */}
+              <div>
+                <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Pasted Resume Content</h4>
+                <pre className="p-3 bg-slate-900 text-slate-200 rounded-xl text-[11px] font-mono overflow-x-auto whitespace-pre-wrap max-h-48 border border-slate-800">
+                  {selectedCandidateDetail.resumeText}
+                </pre>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      )}
+
+      {}
+      {showCompareModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200">
+            <div className="p-6 bg-slate-900 text-white rounded-t-2xl flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-bold">Side-by-Side Candidate Comparison</h3>
+                <p className="text-xs text-slate-400">Comparing {compareList.length} shortlisted candidates</p>
+              </div>
+              <button
+                onClick={() => setShowCompareModal(false)}
+                className="p-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {compareList.map((c) => (
+                  <div key={c.id} className="border border-slate-200 rounded-xl p-4 bg-slate-50 space-y-4">
+                    <div className="border-b border-slate-200 pb-3">
+                      <h4 className="font-bold text-slate-900 text-base">{c.name}</h4>
+                      <p className="text-xs text-slate-500">{c.appliedRole}</p>
+                      <div className="mt-2 flex items-center justify-between">
+                        <span className="font-extrabold text-lg text-indigo-600">{c.matchScore}% Match</span>
+                        {getRecommendationBadge(c.recommendation)}
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className="text-[11px] font-bold text-slate-500 uppercase">Experience & Edu</p>
+                      <p className="text-xs font-semibold text-slate-800 mt-0.5">{c.experienceYears} | {c.education}</p>
+                    </div>
+
+                    <div>
+                      <p className="text-[11px] font-bold text-emerald-700 uppercase">Pros</p>
+                      <ul className="text-xs space-y-0.5 text-emerald-900 mt-0.5">
+                        {c.pros.map((p, idx) => <li key={idx}>• {p}</li>)}
+                      </ul>
+                    </div>
+
+                    <div>
+                      <p className="text-[11px] font-bold text-amber-700 uppercase">Missing Skills / Cons</p>
+                      <ul className="text-xs space-y-0.5 text-amber-900 mt-0.5">
+                        {c.cons.map((con, idx) => <li key={idx}>• {con}</li>)}
+                      </ul>
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-200 flex justify-between">
+                      <button
+                        onClick={() => {
+                          setShowCompareModal(false);
+                          generateAIEmail(c, 'interview');
+                        }}
+                        className="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg transition"
+                      >
+                        Draft Invite Email
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {}
+      {emailModalCandidate && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-xl w-full shadow-2xl border border-slate-200 overflow-hidden">
+            <div className="p-5 bg-slate-900 text-white flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Mail className="w-5 h-5 text-indigo-400" />
+                <h3 className="font-bold text-base">AI Personalized Email Response</h3>
+              </div>
+              <button
+                onClick={() => setEmailModalCandidate(null)}
+                className="text-slate-400 hover:text-white text-sm"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div className="flex items-center justify-between bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-xs">
+                <div>
+                  <span className="text-slate-500">Recipient: </span>
+                  <span className="font-bold text-slate-800">{emailModalCandidate.name} ({emailModalCandidate.email})</span>
+                </div>
+                <div className="flex space-x-1">
+                  <button
+                    onClick={() => generateAIEmail(emailModalCandidate, 'interview')}
+                    className={`px-2 py-1 rounded ${emailType === 'interview' ? 'bg-emerald-600 text-white font-bold' : 'bg-slate-200 text-slate-700'}`}
+                  >
+                    Invite
+                  </button>
+                  <button
+                    onClick={() => generateAIEmail(emailModalCandidate, 'rejection')}
+                    className={`px-2 py-1 rounded ${emailType === 'rejection' ? 'bg-rose-600 text-white font-bold' : 'bg-slate-200 text-slate-700'}`}
+                  >
+                    Reject
+                  </button>
+                  <button
+                    onClick={() => generateAIEmail(emailModalCandidate, 'follow-up')}
+                    className={`px-2 py-1 rounded ${emailType === 'follow-up' ? 'bg-indigo-600 text-white font-bold' : 'bg-slate-200 text-slate-700'}`}
+                  >
+                    Follow Up
+                  </button>
+                </div>
+              </div>
+
+              {isDraftingEmail ? (
+                <div className="py-12 text-center text-xs text-slate-500 space-y-2">
+                  <RefreshCw className="w-6 h-6 animate-spin mx-auto text-indigo-600" />
+                  <p>Gemini AI is crafting a polite personalized response...</p>
+                </div>
+              ) : (
+                <>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Subject Line</label>
+                    <input
+                      type="text"
+                      value={emailSubject}
+                      onChange={(e) => setEmailSubject(e.target.value)}
+                      className="w-full text-xs p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">Email Body</label>
+                    <textarea
+                      rows={8}
+                      value={emailBody}
+                      onChange={(e) => setEmailBody(e.target.value)}
+                      className="w-full text-xs p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 font-sans leading-relaxed"
+                    ></textarea>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2">
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(`Subject: ${emailSubject}\n\n${emailBody}`);
+                        setCopiedEmail(true);
+                        setTimeout(() => setCopiedEmail(false), 2000);
+                      }}
+                      className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg transition flex items-center gap-1.5"
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>{copiedEmail ? 'Copied to Clipboard!' : 'Copy Text'}</span>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        alert(`Simulated Email Sent to ${emailModalCandidate.email}!`);
+                        setEmailModalCandidate(null);
+                      }}
+                      className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg transition shadow flex items-center gap-1.5"
+                    >
+                      <Send className="w-3.5 h-3.5" />
+                      <span>Send Email Now</span>
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {}
+      {showGuideModal && (
+        <div className="fixed inset-0 bg-slate-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200">
+            <div className="p-6 bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 text-white rounded-t-2xl flex items-center justify-between sticky top-0 z-10">
+              <div className="flex items-center gap-2">
+                <Award className="w-6 h-6 text-amber-400" />
+                <div>
+                  <h3 className="font-bold text-lg">BTech Freelance Monetization Blueprint</h3>
+                  <p className="text-xs text-indigo-200">How to sell this Smart Resume Screener to local businesses</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowGuideModal(false)}
+                className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-6 space-y-6 text-slate-800">
+              
+              {/* Value Proposition */}
+              <div className="bg-amber-50 p-4 rounded-xl border border-amber-200 text-amber-900 text-xs sm:text-sm">
+                <h4 className="font-bold text-amber-950 text-sm mb-1 flex items-center gap-1.5">
+                  <TrendingUp className="w-4 h-4 text-amber-600" /> Why Local Businesses Will Pay You
+                </h4>
+                <p>
+                  Local cafe owners, retail store managers, and small IT startups receive 50+ unstructured WhatsApp/PDF resumes whenever they post a job opening. They waste 10–15 hours reading unqualified applications. Pitching them an automated screening dashboard saves them 80% of hiring time.
+                </p>
+              </div>
+
+              {/* Pricing & Business Models */}
+              <div>
+                <h4 className="font-bold text-slate-900 text-sm uppercase tracking-wider mb-3">
+                  Recommended Pricing Models for Students
+                </h4>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="border border-slate-200 rounded-xl p-4 bg-slate-50">
+                    <span className="text-[10px] font-bold bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded uppercase">
+                      Option A: Monthly SaaS
+                    </span>
+                    <h5 className="font-bold text-slate-900 text-base mt-2">₹2,999 - ₹4,999 / mo</h5>
+                    <p className="text-xs text-slate-500 mt-1">
+                      Give the store manager a login dashboard. Include up to 200 resume screens/month using free Gemini API tier.
+                    </p>
+                  </div>
+
+                  <div className="border border-slate-200 rounded-xl p-4 bg-slate-50">
+                    <span className="text-[10px] font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded uppercase">
+                      Option B: Setup + Pay Per Hiring Drive
+                    </span>
+                    <h5 className="font-bold text-slate-900 text-base mt-2">₹5,000 One-time + ₹10/screen</h5>
+                    <p className="text-xs text-slate-500 mt-1">
+                      Charge a setup fee to configure their standard job templates and brand their logo on the app header.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Step-by-Step Pitch Strategy */}
+              <div>
+                <h4 className="font-bold text-slate-900 text-sm uppercase tracking-wider mb-3">
+                  4-Step Sales Action Plan for Students
+                </h4>
+
+                <div className="space-y-3 text-xs">
+                  <div className="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200">
+                    <span className="w-6 h-6 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center text-xs shrink-0">1</span>
+                    <div>
+                      <span className="font-bold text-slate-900">Identify High-Volume Hiring Businesses:</span>
+                      <p className="text-slate-600 mt-0.5">Target local boutique chains, apparel stores, multi-outlet cafes, and entry-level BPO/support teams in your town/city.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200">
+                    <span className="w-6 h-6 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center text-xs shrink-0">2</span>
+                    <div>
+                      <span className="font-bold text-slate-900">Live 5-Minute Demo:</span>
+                      <p className="text-slate-600 mt-0.5">Walk in with your laptop showing this app loaded with sample Store Manager resumes. Show them how it auto-extracts pros/cons and drafts interview emails in 3 seconds.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200">
+                    <span className="w-6 h-6 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center text-xs shrink-0">3</span>
+                    <div>
+                      <span className="font-bold text-slate-900">White-Label Branding:</span>
+                      <p className="text-slate-600 mt-0.5">Offer to customize the logo, colors, and specific screening criteria for their company (e.g. "StarCafe Screener").</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200">
+                    <span className="w-6 h-6 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center text-xs shrink-0">4</span>
+                    <div>
+                      <span className="font-bold text-slate-900">Scale to 5 Clients:</span>
+                      <p className="text-slate-600 mt-0.5">5 local store clients paying ₹3,500/month = <span className="font-bold text-emerald-600">₹17,500/month passive side income</span> while you complete your B.Tech!</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-slate-100 flex justify-end">
+                <button
+                  onClick={() => setShowGuideModal(false)}
+                  className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow transition"
+                >
+                  Got It! Back to Dashboard
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      )}
+
+      {}
+      <footer className="bg-white border-t border-slate-200 py-4 mt-auto">
+        <div className="max-w-7xl mx-auto px-4 text-center text-xs text-slate-400">
+          HireLocal AI • Smart Resume Screener SaaS for Small Businesses • Powered by Google Gemini AI
+        </div>
+      </footer>
+    </div>
+  );
+}
